@@ -20,9 +20,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "type_id")
     private ProductType productType;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private AppUser user;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private Set<Sale> sales;
 }

@@ -16,5 +16,5 @@ public class Notification {
     private Date date;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private AppUser user;
+    private User user;
 }

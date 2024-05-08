@@ -2,12 +2,11 @@ package com.example.ztpai.controllers;
 
 import com.example.ztpai.models.Sale;
 import com.example.ztpai.repositories.SaleRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 @RestController
 public class SaleController {
     private final SaleRepository saleRepository;

@@ -25,7 +25,7 @@ public class Client {
     private String note;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private AppUser user;
+    private User user;
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Sale> sales;
 

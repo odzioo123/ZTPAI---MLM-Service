@@ -1,28 +1,27 @@
 package com.example.ztpai.controllers;
 
-import com.example.ztpai.models.AppUser;
-import com.example.ztpai.repositories.AppUserRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.ztpai.models.User;
+import com.example.ztpai.repositories.UserRepository;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-public class UserController {
-    private final AppUserRepository appUserRepository;
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
+public class UserController{
+    private final UserRepository userRepository;
 
-    public UserController(AppUserRepository appUserRepository) {
-        this.appUserRepository = appUserRepository;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
     @GetMapping("/users")
-    public List<AppUser> getUsers(){
-        return appUserRepository.findAll();
+    public List<User> getUsers(){
+        return userRepository.findAll();
     }
     @PostMapping("/user-add")
-    public AppUser addAppUser(@RequestBody AppUser appUser)
+    public User addUser(@RequestBody User user)
     {
-        return appUserRepository.save(appUser);
+        return userRepository.save(user);
     }
+
 }
