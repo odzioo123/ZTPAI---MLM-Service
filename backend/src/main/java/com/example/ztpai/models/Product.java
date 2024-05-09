@@ -17,9 +17,8 @@ public class Product {
     private String name;
     private double price;
     private double points;
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private ProductType productType;
+    @ManyToMany
+    private Set<ProductType> productType;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private Set<Sale> sales;
 }

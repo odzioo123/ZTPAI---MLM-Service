@@ -13,6 +13,6 @@ public class ProductType {
     @GeneratedValue
     private Integer id;
     private String type;
-    @OneToMany(mappedBy = "productType", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "productType", cascade = CascadeType.ALL)
     private Set<Product> products;
 }
