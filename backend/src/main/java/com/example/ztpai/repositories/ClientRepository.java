@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ClientRepository extends JpaRepository<Client, Integer> {
     List<Client> findAllByNameContaining(String name);
+    List<Client> findAllByUser_Id(int id);
 }

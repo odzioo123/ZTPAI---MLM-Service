@@ -5,6 +5,8 @@ import com.example.ztpai.repositories.ClientRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ public class ClientController {
     public ClientController(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping("/clients")
     public List<Client> getClients(){
         return clientRepository.findAll();
@@ -32,6 +35,14 @@ public class ClientController {
     ){
         return clientRepository.findById(id).orElse(null);
     }
+
+    @GetMapping("/clients/user/{user-id}")
+    public List<Client> getClientByUserID(
+            @PathVariable("user-id") Integer id
+    ){
+        return clientRepository.findAllByUser_Id(id);
+    }
+
     @GetMapping("/clients/search/{client-name}")
     public List<Client> getClientsByName(
             @PathVariable("client-name") String name
