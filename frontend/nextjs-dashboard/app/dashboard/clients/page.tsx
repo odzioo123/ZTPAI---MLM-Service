@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import Table, {Client} from "../../ui/clients/table";
+import Table, { Client } from "../../ui/clients/table";
 
 const ClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([]);
@@ -31,8 +31,12 @@ const ClientsPage = () => {
 
     const deleteClient = async (clientId: number) => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
             });
             if (response.ok) {
                 setClients(clients.filter(client => client.id !== clientId));

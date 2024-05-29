@@ -38,8 +38,12 @@ const ProductsPage = () => {
 
     const deleteProduct = async (productId: number) => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`http://localhost:8080/products/${productId}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
             });
             if (response.ok) {
                 setProducts(products.filter(product => product.id !== productId));

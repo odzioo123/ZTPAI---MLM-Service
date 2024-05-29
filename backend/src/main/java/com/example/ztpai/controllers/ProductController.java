@@ -3,6 +3,7 @@ package com.example.ztpai.controllers;
 import com.example.ztpai.models.Product;
 import com.example.ztpai.repositories.ProductRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -27,6 +28,7 @@ public class ProductController {
         return productRepository.save(appUser);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/products/{product-id}")
     public ResponseEntity<String> deleteProductById(@PathVariable("product-id") Integer id) {
         try {

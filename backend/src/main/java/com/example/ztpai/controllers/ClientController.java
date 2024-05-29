@@ -1,12 +1,11 @@
 package com.example.ztpai.controllers;
 
+import com.example.ztpai.auth.JwtService;
 import com.example.ztpai.models.Client;
 import com.example.ztpai.repositories.ClientRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -20,35 +19,40 @@ import java.util.List;
 @RestController
 public class ClientController {
     private final ClientRepository clientRepository;
+    private final JwtService jwtService;
 
-    public ClientController(ClientRepository clientRepository) {
+    public ClientController(ClientRepository clientRepository, JwtService jwtService) {
         this.clientRepository = clientRepository;
+        this.jwtService = jwtService;
     }
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
+
     @GetMapping("/clients")
-    public List<Client> getClients(){
-        return clientRepository.findAll();
-    }
-    @GetMapping("/clients/{client-id}")
-    public Client getClientByID(
-            @PathVariable("client-id") Integer id
-    ){
-        return clientRepository.findById(id).orElse(null);
+    public List<Client> getClients(@RequestHeader("Authorization") String token) {
+        Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+        return clientRepository.findAllByUser_Id(userId);
     }
 
-    @GetMapping("/clients/user/{user-id}")
-    public List<Client> getClientByUserID(
-            @PathVariable("user-id") Integer id
-    ){
-        return clientRepository.findAllByUser_Id(id);
-    }
-
-    @GetMapping("/clients/search/{client-name}")
-    public List<Client> getClientsByName(
-            @PathVariable("client-name") String name
-    ){
-        return clientRepository.findAllByNameContaining(name);
-    }
+//    @GetMapping("/clients/{client-id}")
+//    public Client getClientByID(
+//            @PathVariable("client-id") Integer id
+//    ){
+//        return clientRepository.findById(id).orElse(null);
+//    }
+//
+//    @GetMapping("/clients/user/{user-id}")
+//    public List<Client> getClientByUserID(
+//            @PathVariable("user-id") Integer id
+//    ){
+//        return clientRepository.findAllByUser_Id(id);
+//    }
+//
+//    @GetMapping("/clients/search/{client-name}")
+//    public List<Client> getClientsByName(
+//            @PathVariable("client-name") String name
+//    ){
+//        return clientRepository.findAllByNameContaining(name);
+//    }
 
     @PostMapping("/clients-add")
     public Client addClient(@Valid @RequestBody Client client)
@@ -57,10 +61,17 @@ public class ClientController {
     }
 
     @DeleteMapping("/clients/{client-id}")
-    public ResponseEntity<String> deleteClientById(@PathVariable("client-id") Integer id) {
+    public ResponseEntity<String> deleteClientById(@PathVariable("client-id") Integer id, @RequestHeader("Authorization") String token) {
         try {
-            clientRepository.deleteById(id);
-            return ResponseEntity.ok().body("Client with ID " + id + " deleted successfully");
+            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+            Client client = clientRepository.findById(id).orElse(null);
+
+            if (client != null && client.getUser().getId().equals(userId)) {
+                clientRepository.deleteById(id);
+                return ResponseEntity.ok().body("Client with ID " + id + " deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this client");
+            }
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client with ID " + id + " not found");
         } catch (Exception ex) {
