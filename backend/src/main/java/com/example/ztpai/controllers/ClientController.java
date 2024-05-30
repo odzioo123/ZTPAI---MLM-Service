@@ -2,11 +2,14 @@ package com.example.ztpai.controllers;
 
 import com.example.ztpai.auth.JwtService;
 import com.example.ztpai.models.Client;
+import com.example.ztpai.models.User;
 import com.example.ztpai.repositories.ClientRepository;
+import com.example.ztpai.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +24,12 @@ import java.util.List;
 public class ClientController {
     private final ClientRepository clientRepository;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
-    public ClientController(ClientRepository clientRepository, JwtService jwtService) {
+    public ClientController(ClientRepository clientRepository, JwtService jwtService, UserRepository userRepository) {
         this.clientRepository = clientRepository;
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 //    @PreAuthorize("hasRole('Admin')")
 
@@ -56,9 +61,27 @@ public class ClientController {
 //    }
 
     @PostMapping("/clients-add")
-    public Client addClient(@Valid @RequestBody Client client)
-    {
-        return clientRepository.save(client);
+    public ResponseEntity<?> addClient(@Valid @RequestBody Client client, BindingResult bindingResult, @RequestHeader("Authorization") String token) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessages.append(error.getField()).append(": ").append(error.getDefaultMessage()).append("; ");
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages.toString());
+        }
+
+        try {
+            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+            User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+            client.setUser(user);
+
+            Client savedClient = clientRepository.save(client);
+            return ResponseEntity.ok(savedClient);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add client");
+        }
     }
 
     @DeleteMapping("/clients/{client-id}")

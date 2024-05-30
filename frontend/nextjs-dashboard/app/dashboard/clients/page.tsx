@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import Table, { Client } from "../../ui/clients/table";
+import AddClientForm from "../../ui/clients/add-client-form"; // Import the form component
 
 const ClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [showAddClientForm, setShowAddClientForm] = useState(false); // State to toggle the form modal
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -50,6 +52,34 @@ const ClientsPage = () => {
         }
     };
 
+    const addClient = async (newClient: Omit<Client, 'id'>): Promise<void> =>  {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch('http://localhost:8080/clients-add', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newClient),
+            });
+            if (response.ok) {
+                const createdClient = await response.json();
+                if ('id' in createdClient) {
+                    setClients([...clients, createdClient]);
+                } else {
+                    console.error('Error: The id property is missing in the created client');
+                }
+                setShowAddClientForm(false);
+            } else {
+                const errorData = await response.text();
+                setErrorMessage(errorData);
+            }
+        } catch (error) {
+            console.error('Error adding client:', error);
+        }
+    };
+
     return (
         <div>
             {errorMessage && (
@@ -57,9 +87,12 @@ const ClientsPage = () => {
                     {errorMessage}
                 </div>
             )}
+            <button onClick={() => setShowAddClientForm(true)}>Add Client</button>
             <Table clients={clients} onDelete={deleteClient} />
+            {showAddClientForm && <AddClientForm onAddClient={addClient} onCancel={() => setShowAddClientForm(false)} />} {/* Render the form modal */}
         </div>
     );
 };
 
 export default ClientsPage;
+

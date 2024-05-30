@@ -65,14 +65,12 @@ const Table: React.FC<TableProps> = ({ clients, onDelete }) => {
                                         <div className="flex justify-end mt-4">
                                             <button
                                                 className="px-4 py-2 bg-red-500 text-white rounded-md mr-4 ml-2 hover:bg-red-600"
-                                                onClick={() => handleDeleteConfirm(client.id)}
-                                            >
+                                                onClick={() => handleDeleteConfirm(client.id)}>
                                                 Yes
                                             </button>
                                             <button
                                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md ml-4 hover:bg-gray-400"
-                                                onClick={() => setConfirmDelete(null)}
-                                            >
+                                                onClick={() => setConfirmDelete(null)}>
                                                 No
                                             </button>
                                         </div>
