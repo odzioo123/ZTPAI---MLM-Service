@@ -1,10 +1,11 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from "react";
 import Table, { Client } from "../../ui/clients/table";
 
 const ClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -41,14 +42,24 @@ const ClientsPage = () => {
             if (response.ok) {
                 setClients(clients.filter(client => client.id !== clientId));
             } else {
-                console.error('Failed to delete client');
+                const errorData = await response.text();
+                setErrorMessage(errorData);
             }
         } catch (error) {
             console.error('Error deleting client:', error);
         }
     };
 
-    return <Table clients={clients} onDelete={deleteClient} />;
+    return (
+        <div>
+            {errorMessage && (
+                <div className="alert alert-danger" role="alert">
+                    {errorMessage}
+                </div>
+            )}
+            <Table clients={clients} onDelete={deleteClient} />
+        </div>
+    );
 };
 
 export default ClientsPage;

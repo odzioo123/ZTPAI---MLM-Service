@@ -36,7 +36,7 @@ const Table: React.FC<TableProps> = ({ clients, onDelete }) => {
                     <th className="border border-gray-300 px-4 py-2">Email</th>
                     <th className="border border-gray-300 px-4 py-2">Date</th>
                     <th className="border border-gray-300 px-4 py-2">Note</th>
-                    <th className="border border-gray-300 px-4 py-2">Actions</th>
+                    <th className="border border-gray-300 px-4 py-2 w-20 text-center">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -49,15 +49,32 @@ const Table: React.FC<TableProps> = ({ clients, onDelete }) => {
                         <td className="border border-gray-300 px-4 py-2">{client.email}</td>
                         <td className="border border-gray-300 px-4 py-2">{client.date}</td>
                         <td className="border border-gray-300 px-4 py-2">{client.note}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                            <button onClick={() => setConfirmDelete(client.id)}>Delete</button>
+                        <td className="border border-gray-300 px-2 py-2 w-20 text-center">
+                            <div className="flex justify-center">
+                                <button
+                                    className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                    onClick={() => setConfirmDelete(client.id)}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                             {confirmDelete === client.id && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
                                     <div className="bg-white p-4 rounded-md">
                                         <p>Are you sure you want to delete this client?</p>
                                         <div className="flex justify-end mt-4">
-                                            <button className="px-4 py-2 bg-red-500 text-white rounded-md mr-4 ml-2" onClick={() => handleDeleteConfirm(client.id)}>Yes</button>
-                                            <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md ml-4" onClick={() => setConfirmDelete(null)}>No</button>
+                                            <button
+                                                className="px-4 py-2 bg-red-500 text-white rounded-md mr-4 ml-2 hover:bg-red-600"
+                                                onClick={() => handleDeleteConfirm(client.id)}
+                                            >
+                                                Yes
+                                            </button>
+                                            <button
+                                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md ml-4 hover:bg-gray-400"
+                                                onClick={() => setConfirmDelete(null)}
+                                            >
+                                                No
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

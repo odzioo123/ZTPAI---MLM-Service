@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import SalesTable, { Sale } from "../../ui/sales/table";
+import Table, { Sale } from "../../ui/sales/table";
 
 const SalesPage = () => {
     const [sales, setSales] = useState<Sale[]>([]);
@@ -9,7 +9,12 @@ const SalesPage = () => {
     useEffect(() => {
         const fetchSales = async () => {
             try {
-                const response = await fetch('http://localhost:8080/sales');
+                const token = localStorage.getItem("token");
+                const response = await fetch('http://localhost:8080/sales', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setSales(data);
@@ -26,11 +31,14 @@ const SalesPage = () => {
 
     const deleteSale = async (saleId: number) => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`http://localhost:8080/sales/${saleId}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
             });
             if (response.ok) {
-                // If the deletion was successful, update the sales state
                 setSales(sales.filter(sale => sale.id !== saleId));
             } else {
                 console.error('Failed to delete sale');
@@ -40,7 +48,7 @@ const SalesPage = () => {
         }
     };
 
-    return <SalesTable sales={sales} onDelete={deleteSale} />;
+    return <Table sales={sales} onDelete={deleteSale} />;
 };
 
 export default SalesPage;

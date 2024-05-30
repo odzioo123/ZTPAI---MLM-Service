@@ -4,6 +4,7 @@ import com.example.ztpai.auth.JwtService;
 import com.example.ztpai.models.Client;
 import com.example.ztpai.repositories.ClientRepository;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -67,17 +68,24 @@ public class ClientController {
             Client client = clientRepository.findById(id).orElse(null);
 
             if (client != null && client.getUser().getId().equals(userId)) {
-                clientRepository.deleteById(id);
-                return ResponseEntity.ok().body("Client with ID " + id + " deleted successfully");
+                if (client.getSales().isEmpty()) {
+                    clientRepository.deleteById(id);
+                    return ResponseEntity.ok().body("Client with ID " + id + " deleted successfully");
+                } else {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("This client is associated with one or more sales and cannot be deleted");
+                }
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this client");
             }
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to delete client with ID " + id + ": This client is associated with one or more sales and cannot be deleted");
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client with ID " + id + " not found");
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete client with ID " + id);
         }
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(

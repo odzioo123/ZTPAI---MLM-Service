@@ -186,7 +186,6 @@ public class DatabaseInitializer implements CommandLineRunner {
         ProductType productType10 = new ProductType();
         productType10.setType("Essential Oils");
 
-        // Save product types
         productTypeRepository.saveAll(Set.of(productType1, productType2, productType3, productType4, productType5, productType6,
                 productType7, productType8, productType9, productType10));
 
@@ -252,7 +251,94 @@ public class DatabaseInitializer implements CommandLineRunner {
         product8.setPoints(0.048);
         product8.setProductType(productTypes2);
 
-        productRepository.saveAll(Set.of(product1, product2, product3, product4, product5, product6, product7, product8));
+        Product product9 = new Product();
+        product9.setCode(777);
+        product9.setName("Forever Aloe Peaches");
+        product9.setPrice(160.45);
+        product9.setPoints(0.101);
+        product9.setProductType(productTypes1);
+
+        Product product10 = new Product();
+        product10.setCode(7773);
+        product10.setName("Tripak Forever Aloe Peaches");
+        product10.setPrice(481.32);
+        product10.setPoints(0.303);
+        product10.setProductType(productTypes1);
+
+        Product product11 = new Product();
+        product11.setCode(736);
+        product11.setName("Forever Aloe Mango");
+        product11.setPrice(160.45);
+        product11.setPoints(0.101);
+        product11.setProductType(productTypes1);
+
+        productRepository.saveAll(Set.of(product1, product2, product3, product4, product5, product6, product7, product8,
+                product9, product10, product11));
+
+        // Sales for client1
+        Sale sale1 = new Sale();
+        sale1.setQuantity(2);
+        sale1.setNote("First Sale for client1");
+        sale1.setProduct(product1);
+        sale1.setClient(client1);
+
+        Sale sale2 = new Sale();
+        sale2.setQuantity(1);
+        sale2.setNote("Second Sale for client1");
+        sale2.setProduct(product2);
+        sale2.setClient(client1);
+
+        // Sales for client2
+        Sale sale3 = new Sale();
+        sale3.setQuantity(3);
+        sale3.setNote("First Sale for client2");
+        sale3.setProduct(product3);
+        sale3.setClient(client2);
+
+        Sale sale4 = new Sale();
+        sale4.setQuantity(5);
+        sale4.setNote("Second Sale for client2");
+        sale4.setProduct(product4);
+        sale4.setClient(client2);
+
+        Sale sale5 = new Sale();
+        sale5.setQuantity(4);
+        sale5.setNote("Third Sale for client2");
+        sale5.setProduct(product5);
+        sale5.setClient(client2);
+
+        Sale sale6 = new Sale();
+        sale6.setQuantity(6);
+        sale6.setNote("Fourth Sale for client2");
+        sale6.setProduct(product6);
+        sale6.setClient(client2);
+
+        // Sales for client3
+        Sale sale7 = new Sale();
+        sale7.setQuantity(1);
+        sale7.setNote("First Sale for client3");
+        sale7.setProduct(product7);
+        sale7.setClient(client3);
+
+        Sale sale8 = new Sale();
+        sale8.setQuantity(2);
+        sale8.setNote("Second Sale for client3");
+        sale8.setProduct(product8);
+        sale8.setClient(client3);
+
+        Sale sale9 = new Sale();
+        sale9.setQuantity(1);
+        sale9.setNote("Third Sale for client3");
+        sale9.setProduct(product9);
+        sale9.setClient(client3);
+
+        // Sale for client4
+        Sale sale10 = new Sale();
+        sale10.setQuantity(3);
+        sale10.setNote("First Sale for client4");
+        sale10.setProduct(product10);
+        sale10.setClient(client4);
+        saleRepository.saveAll(Set.of(sale1, sale2, sale3, sale4, sale5, sale6, sale7, sale8, sale9, sale10));
 
     }
 }
