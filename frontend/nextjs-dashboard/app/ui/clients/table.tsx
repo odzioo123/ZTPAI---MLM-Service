@@ -28,7 +28,7 @@ const Table: React.FC<TableProps> = ({ clients, onDelete }) => {
         <div className="overflow-x-auto">
             <table className="min-w-full border-collapse border border-gray-300">
                 <thead>
-                <tr className="bg-gray-200">
+                <tr className="bg-green-200">
                     <th className="border border-gray-300 px-4 py-2">Name</th>
                     <th className="border border-gray-300 px-4 py-2">Surname</th>
                     <th className="border border-gray-300 px-4 py-2">Discount</th>

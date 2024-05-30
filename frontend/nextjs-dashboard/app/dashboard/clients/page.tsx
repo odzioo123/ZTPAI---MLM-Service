@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Table, { Client } from "../../ui/clients/table";
-import AddClientForm from "../../ui/clients/add-client-form"; // Import the form component
+import AddClientForm from "../../ui/clients/add-client-form";
+import TopBar from "../../ui/components/top-bar";
 
 const ClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [showAddClientForm, setShowAddClientForm] = useState(false); // State to toggle the form modal
+    const [showAddClientForm, setShowAddClientForm] = useState(false);
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -81,18 +82,18 @@ const ClientsPage = () => {
     };
 
     return (
-        <div>
+        <div className="p-6">
+            <TopBar title="Client Management" />
             {errorMessage && (
                 <div className="alert alert-danger" role="alert">
                     {errorMessage}
                 </div>
             )}
-            <button onClick={() => setShowAddClientForm(true)}>Add Client</button>
+            <button className="btn-green mb-4" onClick={() => setShowAddClientForm(true)}>Add Client</button>
             <Table clients={clients} onDelete={deleteClient} />
-            {showAddClientForm && <AddClientForm onAddClient={addClient} onCancel={() => setShowAddClientForm(false)} />} {/* Render the form modal */}
+            {showAddClientForm && <AddClientForm onAddClient={addClient} onCancel={() => setShowAddClientForm(false)} />}
         </div>
     );
 };
 
 export default ClientsPage;
-

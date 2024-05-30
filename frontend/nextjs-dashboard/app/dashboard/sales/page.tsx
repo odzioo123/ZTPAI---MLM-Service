@@ -1,12 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import Table, { Sale } from "../../ui/sales/table";
+import SalesTable, { Sale } from "../../ui/sales/table";
+import TopBar from "../../ui/components/top-bar";
 
 const SalesPage = () => {
     const [sales, setSales] = useState<Sale[]>([]);
+    const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decodedToken = JSON.parse(atob(token.split('.')[1]));
+            setUserRole(decodedToken.role);
+        }
+
         const fetchSales = async () => {
             try {
                 const token = localStorage.getItem("token");
@@ -48,7 +56,12 @@ const SalesPage = () => {
         }
     };
 
-    return <Table sales={sales} onDelete={deleteSale} />;
+    return (
+        <div className="p-6">
+            <TopBar title="Sales Management" />
+            <SalesTable sales={sales} onDelete={deleteSale}/>
+        </div>
+    );
 };
 
 export default SalesPage;

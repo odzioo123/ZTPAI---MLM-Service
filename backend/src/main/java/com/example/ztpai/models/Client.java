@@ -23,7 +23,7 @@ public class Client {
     @Min(value = 0, message = "Discount must be at least 1")
     @Max(value = 49, message = "Discount must be at most 49")
     private double discount  = 0;
-    @Pattern(regexp = "\\d{9}", message = "Phone number must be a 9-digit number")
+    @Pattern(regexp = "\\d{1}(\\s?\\d){8}", message = "Phone number must be a 9-digit number with optional spaces")
     private String phone_number;
     private String email;
     private Date date;
