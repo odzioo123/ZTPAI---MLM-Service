@@ -2,20 +2,37 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-
 const Page = () => {
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/dashboard');
-    } else {
+
+    if (token)
+    {
+      fetch(`http://localhost:8080/istoken-expired?token=${token}`)
+          .then(response => {
+            if (response.ok)
+            {
+              router.push('/dashboard');
+            }
+            else
+            {
+              localStorage.removeItem('token');
+              router.push('/pages/auth/login');
+            }
+          });
+          // .catch(() => {
+          //   localStorage.removeItem('token');
+          //   router.push('/pages/auth/login');
+          // });
+    }
+    else
+    {
       router.push('/pages/auth/login');
     }
   }, [router]);
 
-  // Optionally, you can render a loading state or null while the redirect is happening
   return <p>Redirecting...</p>;
 };
 

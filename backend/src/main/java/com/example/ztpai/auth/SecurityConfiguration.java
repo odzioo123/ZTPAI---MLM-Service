@@ -26,6 +26,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
+                                .requestMatchers("/istoken-expired/**", "/istoken-expired").permitAll()
                                 .requestMatchers("/authenticate", "/register").permitAll()
                                 .requestMatchers(HttpMethod.DELETE,"/products/**").hasAnyAuthority("Admin")
                                 .anyRequest().authenticated()
