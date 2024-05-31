@@ -3,9 +3,9 @@ import { lusitana } from '@/app/ui/fonts';
 
 export default function MyLogo() {
   return (
-      <div className={`${lusitana.className} flex flex-row items-center leading-none text-white`}>
-        <BriefcaseIcon className="h-16 w-16" />
-        <p className="text-2xl ml-2">My Company</p>
+      <div className={`${lusitana.className} flex flex-row items-center leading-none text-gray-100`}>
+        <BriefcaseIcon className="h-24 w-24 mt-1 text-gray-100" />
+        <p className="text-3xl ml-4 mt-1">MLM - Service</p>
       </div>
   );
 }

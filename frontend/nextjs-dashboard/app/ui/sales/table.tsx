@@ -8,16 +8,13 @@ export interface Sale {
     product: {
         id: number;
         name: string;
-        price: number; // Include product price
-        // Include other product properties as needed
+        price: number;
     };
     client: {
         id: number;
         name: string;
-        surname: string; // Include surname
-        // Include other client properties as needed
+        surname: string;
     };
-    // Include any other properties related to sales
 }
 
 interface TableProps {
@@ -28,8 +25,8 @@ interface TableProps {
 const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
     const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
-    const handleDeleteConfirm = (clientId: number) => {
-        onDelete(clientId);
+    const handleDeleteConfirm = (saleId: number) => {
+        onDelete(saleId);
         setConfirmDelete(null);
     };
 
@@ -68,7 +65,7 @@ const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
                             {confirmDelete === sale.id && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
                                     <div className="bg-white p-4 rounded-md">
-                                        <p>Are you sure you want to delete this client?</p>
+                                        <p>Are you sure you want to delete this sale?</p>
                                         <div className="flex justify-end mt-4">
                                             <button
                                                 className="px-4 py-2 bg-red-500 text-white rounded-md mr-4 ml-2 hover:bg-red-600"

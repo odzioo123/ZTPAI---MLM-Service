@@ -64,36 +64,38 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ onAddClient, onCancel }) 
                 <span className="close" onClick={onCancel}>&times;</span>
                 <h2>Add Client</h2>
                 <form onSubmit={handleSubmit}>
-                    <div>
+                    <div className="form-group">
                         <label>Name:</label>
                         <input type="text" name="name" value={newClient.name} onChange={handleChange} required />
                         {errors.name && <span className="error">{errors.name}</span>}
                     </div>
-                    <div>
+                    <div className="form-group">
                         <label>Surname:</label>
                         <input type="text" name="surname" value={newClient.surname} onChange={handleChange} />
                         {errors.surname && <span className="error">{errors.surname}</span>}
                     </div>
-                    <div>
+                    <div className="form-group">
                         <label>Discount:</label>
                         <input type="number" name="discount" value={newClient.discount} onChange={handleChange} />
                         {errors.discount && <span className="error">{errors.discount}</span>}
                     </div>
-                    <div>
+                    <div className="form-group">
                         <label>Email:</label>
                         <input type="email" name="email" value={newClient.email || ''} onChange={handleChange} />
                     </div>
-                    <div>
+                    <div className="form-group">
                         <label>Phone Number:</label>
                         <input type="tel" name="phone_number" value={newClient.phone_number || ''} onChange={handleChange} />
                         {errors.phone_number && <span className="error">{errors.phone_number}</span>}
                     </div>
-                    <div>
+                    <div className="form-group">
                         <label>Note:</label>
-                        <input name="note" value={newClient.note || ''} onChange={handleChange} />
+                        <textarea name="note" value={newClient.note || ''} onChange={handleChange} />
                     </div>
-                    <button type="submit" className="btn-green">Submit</button>
-                    <button type="button" className="btn-cancel" onClick={onCancel}>Cancel</button>
+                    <div className="form-buttons">
+                        <button type="submit" className="btn-green">Submit</button>
+                        <button type="button" className="btn-cancel" onClick={onCancel}>Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>

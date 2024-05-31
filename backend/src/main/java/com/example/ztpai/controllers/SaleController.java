@@ -2,7 +2,9 @@ package com.example.ztpai.controllers;
 
 import com.example.ztpai.auth.JwtService;
 import com.example.ztpai.models.Client;
+import com.example.ztpai.models.Product;
 import com.example.ztpai.models.Sale;
+import com.example.ztpai.repositories.ProductRepository;
 import com.example.ztpai.repositories.SaleRepository;
 import com.example.ztpai.repositories.ClientRepository;
 import org.springframework.http.HttpStatus;
@@ -18,11 +20,13 @@ import java.util.stream.Collectors;
 public class SaleController {
     private final SaleRepository saleRepository;
     private final ClientRepository clientRepository;
+    private final ProductRepository productRepository;
     private final JwtService jwtService;
 
-    public SaleController(SaleRepository saleRepository, ClientRepository clientRepository, JwtService jwtService) {
+    public SaleController(SaleRepository saleRepository, ClientRepository clientRepository, ProductRepository productRepository, JwtService jwtService) {
         this.saleRepository = saleRepository;
         this.clientRepository = clientRepository;
+        this.productRepository = productRepository;
         this.jwtService = jwtService;
     }
     @GetMapping("/sales")
@@ -32,6 +36,30 @@ public class SaleController {
                 .map(Client::getId)
                 .collect(Collectors.toList());
         return saleRepository.findAllByClientIdIn(clientIds);
+    }
+
+    @PostMapping("/sales-add")
+    public ResponseEntity<?> addSale(@RequestBody Sale sale, @RequestHeader("Authorization") String token) {
+        try {
+            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+            Client client = clientRepository.findById(sale.getClient().getId()).orElseThrow(() -> new NoSuchElementException("Client not found"));
+            Product product = productRepository.findById(sale.getProduct().getId()).orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+            if (!client.getUser().getId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to add a sale for this client");
+            }
+
+            sale.setClient(client);
+            sale.setProduct(product);
+            sale.setDate(new java.util.Date());
+
+            Sale savedSale = saleRepository.save(sale);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedSale);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add sale: " + ex.getMessage());
+        }
     }
 
     @DeleteMapping("/sales/{sale-id}")
