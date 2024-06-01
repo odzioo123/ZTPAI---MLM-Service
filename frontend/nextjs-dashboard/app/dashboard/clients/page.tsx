@@ -9,19 +9,23 @@ const ClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [showAddClientForm, setShowAddClientForm] = useState(false);
+    const [page, setPage] = useState<number>(0);
+    const [size, setSize] = useState<number>(10);
+    const [totalPages, setTotalPages] = useState<number>(0);
 
     useEffect(() => {
         const fetchClients = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await fetch('http://localhost:8080/clients', {
+                const response = await fetch(`http://localhost:8080/clients?page=${page}&size=${size}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setClients(data);
+                    setClients(data.content);
+                    setTotalPages(data.totalPages);
                 } else {
                     console.error('Failed to fetch clients data');
                 }
@@ -31,7 +35,7 @@ const ClientsPage = () => {
         };
 
         fetchClients();
-    }, []);
+    }, [page, size]);
 
     const deleteClient = async (clientId: number) => {
         try {
@@ -81,6 +85,15 @@ const ClientsPage = () => {
         }
     };
 
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleSizeChange = (newSize: number) => {
+        setSize(newSize);
+        setPage(0); // reset to first page whenever page size changes
+    };
+
     return (
         <div className="p-6">
             <TopBar title="Client Management" />
@@ -92,6 +105,33 @@ const ClientsPage = () => {
             <button className="btn-green mb-4" onClick={() => setShowAddClientForm(true)}>Add Client</button>
             <Table clients={clients} onDelete={deleteClient} />
             {showAddClientForm && <AddClientForm onAddClient={addClient} onCancel={() => setShowAddClientForm(false)} />}
+            <div className="flex justify-between items-center mt-4">
+                <div>
+                    <label htmlFor="pageSize" className="mr-2">Page size:</label>
+                    <select id="pageSize" value={size} onChange={e => handleSizeChange(Number(e.target.value))}>
+                        <option value={2}>2</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                    </select>
+                </div>
+                <div>
+                    <button
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={page <= 0}
+                        className="btn"
+                    >
+                        Previous
+                    </button>
+                    <span className="mx-2">Page {page + 1} of {totalPages}</span>
+                    <button
+                        onClick={() => handlePageChange(page + 1)}
+                        disabled={page >= totalPages - 1}
+                        className="btn"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

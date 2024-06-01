@@ -7,6 +7,9 @@ import com.example.ztpai.repositories.ClientRepository;
 import com.example.ztpai.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 import java.util.HashMap;
-import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 @RestController
@@ -31,34 +33,23 @@ public class ClientController {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
-//    @PreAuthorize("hasRole('Admin')")
 
     @GetMapping("/clients")
-    public List<Client> getClients(@RequestHeader("Authorization") String token) {
-        Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
-        return clientRepository.findAllByUser_Id(userId);
+    public ResponseEntity<Page<Client>> getClients(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Client> clientsPage = clientRepository.findAllByUser_Id(userId, pageable);
+            return ResponseEntity.ok(clientsPage);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-
-//    @GetMapping("/clients/{client-id}")
-//    public Client getClientByID(
-//            @PathVariable("client-id") Integer id
-//    ){
-//        return clientRepository.findById(id).orElse(null);
-//    }
-//
-//    @GetMapping("/clients/user/{user-id}")
-//    public List<Client> getClientByUserID(
-//            @PathVariable("user-id") Integer id
-//    ){
-//        return clientRepository.findAllByUser_Id(id);
-//    }
-//
-//    @GetMapping("/clients/search/{client-name}")
-//    public List<Client> getClientsByName(
-//            @PathVariable("client-name") String name
-//    ){
-//        return clientRepository.findAllByNameContaining(name);
-//    }
 
     @PostMapping("/clients-add")
     public ResponseEntity<?> addClient(@Valid @RequestBody Client client, BindingResult bindingResult, @RequestHeader("Authorization") String token) {

@@ -9,19 +9,23 @@ const SalesPage = () => {
     const [sales, setSales] = useState<Sale[]>([]);
     const [showAddSaleForm, setShowAddSaleForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(0);
+    const [size, setSize] = useState<number>(10);
+    const [totalPages, setTotalPages] = useState<number>(0);
 
     useEffect(() => {
         const fetchSales = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await fetch('http://localhost:8080/sales', {
+                const response = await fetch(`http://localhost:8080/sales?page=${page}&size=${size}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setSales(data);
+                    setSales(data.content);
+                    setTotalPages(data.totalPages);
                 } else {
                     console.error('Failed to fetch sales data');
                 }
@@ -31,7 +35,7 @@ const SalesPage = () => {
         };
 
         fetchSales();
-    }, []);
+    }, [page, size]);
 
     const deleteSale = async (saleId: number) => {
         try {
@@ -76,6 +80,15 @@ const SalesPage = () => {
         }
     };
 
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleSizeChange = (newSize: number) => {
+        setSize(newSize);
+        setPage(0); // reset to first page whenever page size changes
+    };
+
     return (
         <div className="p-6">
             <TopBar title="Sales Management" />
@@ -87,6 +100,33 @@ const SalesPage = () => {
             <button className="btn-green mb-4" onClick={() => setShowAddSaleForm(true)}>Add Sale</button>
             <SalesTable sales={sales} onDelete={deleteSale} />
             {showAddSaleForm && <AddSaleForm onAddSale={addSale} onCancel={() => setShowAddSaleForm(false)} />}
+            <div className="flex justify-between items-center mt-4">
+                <div>
+                    <label htmlFor="pageSize" className="mr-2">Page size:</label>
+                    <select id="pageSize" value={size} onChange={e => handleSizeChange(Number(e.target.value))}>
+                        <option value={2}>2</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                    </select>
+                </div>
+                <div>
+                    <button
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={page <= 0}
+                        className="btn"
+                    >
+                        Previous
+                    </button>
+                    <span className="mx-2">Page {page + 1} of {totalPages}</span>
+                    <button
+                        onClick={() => handlePageChange(page + 1)}
+                        disabled={page >= totalPages - 1}
+                        className="btn"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

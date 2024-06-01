@@ -23,12 +23,19 @@ public class ProductController {
         this.productRepository = productRepository;
     }
     @GetMapping("/products")
-    public Page<Product> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findAll(pageable);
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Product> products = productRepository.findAll(pageable);
+            return ResponseEntity.ok(products);
+        }
+        catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
     @PostMapping("/product-add")
     public Product addProduct(@RequestBody Product appUser)
     {

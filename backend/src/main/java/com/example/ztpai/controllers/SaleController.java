@@ -7,6 +7,9 @@ import com.example.ztpai.models.Sale;
 import com.example.ztpai.repositories.ProductRepository;
 import com.example.ztpai.repositories.SaleRepository;
 import com.example.ztpai.repositories.ClientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +33,25 @@ public class SaleController {
         this.jwtService = jwtService;
     }
     @GetMapping("/sales")
-    public List<Sale> getSales(@RequestHeader("Authorization") String token) {
-        Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
-        List<Integer> clientIds = clientRepository.findAllByUser_Id(userId).stream()
-                .map(Client::getId)
-                .collect(Collectors.toList());
-        return saleRepository.findAllByClientIdIn(clientIds);
+    public ResponseEntity<Page<Sale>> getSales(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+            List<Integer> clientIds = clientRepository.findAllByUser_Id(userId).stream()
+                    .map(Client::getId)
+                    .collect(Collectors.toList());
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Sale> salesPage = saleRepository.findAllByClientIdIn(clientIds, pageable);
+            return ResponseEntity.ok(salesPage);
+        }
+        catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @PostMapping("/sales-add")
