@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - "6010:5432"
+    environment:
+      - POSTGRES_PASSWORD=miecz
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    env_file:
+      - ./backend/.env
