@@ -13,27 +13,28 @@ const SalesPage = () => {
     const [size, setSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
 
-    useEffect(() => {
-        const fetchSales = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const response = await fetch(`http://localhost:8080/sales?page=${page}&size=${size}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setSales(data.content);
-                    setTotalPages(data.totalPages);
-                } else {
-                    console.error('Failed to fetch sales data');
-                }
-            } catch (error) {
-                console.error('Error fetching sales data:', error);
+    const fetchSales = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:8080/sales?page=${page}&size=${size}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setSales(data.content);
+                setTotalPages(data.totalPages);
+            } else {
+                console.error('Failed to fetch sales data');
             }
-        };
+        } catch (error) {
+            console.error('Error fetching sales data:', error);
+        }
+    };
 
+
+    useEffect(() => {
         fetchSales();
     }, [page, size]);
 
@@ -71,6 +72,7 @@ const SalesPage = () => {
                 const createdSale = await response.json();
                 setSales([...sales, createdSale]);
                 setShowAddSaleForm(false);
+                fetchSales();
             } else {
                 const errorData = await response.text();
                 setErrorMessage(errorData);

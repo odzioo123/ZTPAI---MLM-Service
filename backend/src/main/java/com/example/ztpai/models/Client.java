@@ -1,5 +1,6 @@
 package com.example.ztpai.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -31,6 +32,7 @@ public class Client {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @JsonIgnoreProperties("client")
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Sale> sales;
 

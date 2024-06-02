@@ -55,7 +55,7 @@ const ProductsPage = () => {
             });
             if (response.ok) {
                 setProducts(products.filter(product => product.id !== productId));
-                setErrorMessage(null); // Clear any previous error message
+                setErrorMessage(null);
             } else {
                 const errorText = await response.text();
                 setErrorMessage(errorText);
@@ -78,13 +78,9 @@ const ProductsPage = () => {
             });
             if (response.ok) {
                 const createdProduct = await response.json();
-                if ('id' in createdProduct) {
-                    setProducts([...products, createdProduct]);
-                    setErrorMessage(null);
-                } else {
-                    console.error('Error: The id property is missing in the created product');
-                }
+                setProducts([...products, createdProduct]);
                 setShowAddProductForm(false);
+                setErrorMessage(null);
             } else {
                 const errorData = await response.text();
                 setErrorMessage(errorData);
@@ -100,7 +96,7 @@ const ProductsPage = () => {
 
     const handleSizeChange = (newSize: number) => {
         setSize(newSize);
-        setPage(0); // reset to first page whenever page size changes
+        setPage(0);
     };
 
     return (

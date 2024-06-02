@@ -18,7 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
-
+import java.util.List;
 import java.util.HashMap;
 
 @CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
@@ -47,6 +47,18 @@ public class ClientController {
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/clients-all")
+    public ResponseEntity<List<Client>> getAllClients(@RequestHeader("Authorization") String token) {
+        try {
+            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+            List<Client> clients = clientRepository.findAllByUser_Id(userId);
+            return ResponseEntity.ok(clients);
+        } catch (Exception ex) {
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

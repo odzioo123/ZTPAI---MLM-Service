@@ -25,22 +25,36 @@ const AddSaleForm: React.FC<AddSaleFormProps> = ({ onAddSale, onCancel }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const token = localStorage.getItem("token");
-            const productResponse = await fetch('http://localhost:8080/products', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const clientResponse = await fetch('http://localhost:8080/clients', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            const productData = await productResponse.json();
-            const clientData = await clientResponse.json();
-            setProducts(productData);
-            setClients(clientData);
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    throw new Error("Token not found in local storage");
+                }
+                const productResponse = await fetch('http://localhost:8080/products-all', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const clientResponse = await fetch('http://localhost:8080/clients-all', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (productResponse.ok) {
+                    const productData = await productResponse.json();
+                    setProducts(productData);
+                } else {
+                    console.error('Failed to fetch products');
+                }
+                if (clientResponse.ok) {
+                    const clientData = await clientResponse.json();
+                    setClients(clientData);
+                } else {
+                    console.error('Failed to fetch clients');
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
         };
 
         fetchData();
@@ -54,7 +68,7 @@ const AddSaleForm: React.FC<AddSaleFormProps> = ({ onAddSale, onCancel }) => {
         }));
     };
 
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setNewSale(prevSale => ({
             ...prevSale,
@@ -76,7 +90,7 @@ const AddSaleForm: React.FC<AddSaleFormProps> = ({ onAddSale, onCancel }) => {
                     <div className="form-group">
                         <label>Product:</label>
                         <select name="product" value={newSale.product.id} onChange={handleSelectChange} required>
-                            <option value="" disabled>Select Product</option>
+                            <option value="">Select Product</option>
                             {products.map(product => (
                                 <option key={product.id} value={product.id}>{product.name}</option>
                             ))}
@@ -85,7 +99,7 @@ const AddSaleForm: React.FC<AddSaleFormProps> = ({ onAddSale, onCancel }) => {
                     <div className="form-group">
                         <label>Client:</label>
                         <select name="client" value={newSale.client.id} onChange={handleSelectChange} required>
-                            <option value="" disabled>Select Client</option>
+                            <option value="">Select Client</option>
                             {clients.map(client => (
                                 <option key={client.id} value={client.id}>{client.name} {client.surname}</option>
                             ))}

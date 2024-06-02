@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
+import { ProductType } from "@/app/ui/products/add-product-form";
 
 export interface Product {
     id: number;
@@ -6,6 +7,7 @@ export interface Product {
     name: string;
     price: number;
     points: number;
+    productType: ProductType[];
 }
 
 interface TableProps {
@@ -17,6 +19,16 @@ interface TableProps {
 const ProductsTable: React.FC<TableProps> = ({ products, onDelete, userRole }) => {
     const isAdmin = userRole === "Admin";
     const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+
+    useEffect(() => {
+        // Close the confirmation modal after 3 seconds
+        if (confirmDelete !== null) {
+            const timer = setTimeout(() => {
+                setConfirmDelete(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [confirmDelete]);
 
     const handleDeleteConfirm = (productId: number) => {
         onDelete(productId);
@@ -32,6 +44,7 @@ const ProductsTable: React.FC<TableProps> = ({ products, onDelete, userRole }) =
                     <th className="border border-gray-300 px-4 py-2">Name</th>
                     <th className="border border-gray-300 px-4 py-2">Price</th>
                     <th className="border border-gray-300 px-4 py-2">Points</th>
+                    <th className="border border-gray-300 px-4 py-2">Product Type</th>
                     {isAdmin && <th className="border border-gray-300 px-4 py-2 w-24 text-center">Actions</th>}
                 </tr>
                 </thead>
@@ -42,6 +55,9 @@ const ProductsTable: React.FC<TableProps> = ({ products, onDelete, userRole }) =
                         <td className="border border-gray-300 px-4 py-2">{product.name}</td>
                         <td className="border border-gray-300 px-4 py-2">{product.price}</td>
                         <td className="border border-gray-300 px-4 py-2">{product.points}</td>
+                        <td className="border border-gray-300 px-4 py-2">
+                            {product.productType.map(pt => pt.type).join(', ')}
+                        </td>
                         {isAdmin && (
                             <td className="border border-gray-300 px-2 py-2 w-24 text-center">
                                 <div className="flex justify-center">
