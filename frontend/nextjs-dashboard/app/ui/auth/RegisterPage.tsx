@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import LoginLayout from "./LoginLayout";
+import Link from "next/link";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({ nick: "", email: "", password: "" });
@@ -92,6 +93,9 @@ const RegisterPage = () => {
                     >
                         Register
                     </button>
+                    <Link href="login">
+                        <div className="text-blue-500 hover:text-blue-800 cursor-pointer text-sm">Back to login</div>
+                    </Link>
                 </div>
             </form>
         </LoginLayout>

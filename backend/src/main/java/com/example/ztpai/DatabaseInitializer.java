@@ -367,7 +367,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         sale5.setClient(client2);
 
         Sale sale6 = new Sale();
-        sale6.setQuantity(6);
+        sale6.setQuantity(2);
         sale6.setNote("Fourth Sale for client2");
         sale6.setProduct(product6);
         sale6.setClient(client2);
