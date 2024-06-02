@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export interface ProductInput {
     name: string;
     code: string;
     price: number;
     points: number;
+    productTypeId: number;
+}
+
+export interface ProductType {
+    id: number;
+    type: string;
 }
 
 interface AddProductFormProps {
@@ -18,9 +24,35 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onCancel 
         code: '',
         price: 0,
         points: 0,
+        productTypeId: 0,
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+
+    useEffect(() => {
+        const fetchProductTypes = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await fetch(`http://localhost:8080/product-types`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setProductTypes(data);
+                } else {
+                    console.error('Failed to fetch product types data');
+                }
+            } catch (error) {
+                console.error('Error fetching product types data:', error);
+            }
+        };
+
+        fetchProductTypes();
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setNewProduct(prevProduct => ({
             ...prevProduct,
@@ -30,7 +62,14 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onCancel 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        onAddProduct(newProduct);
+        const selectedProductTypeId = Number(newProduct.productTypeId);
+        const selectedProductType = productTypes.find(productType => productType.id === selectedProductTypeId);
+        if (selectedProductType) {
+            const updatedProduct = { ...newProduct, productType: [selectedProductType] };
+            onAddProduct(updatedProduct);
+        } else {
+            console.error("Selected product type not found");
+        }
     };
 
     return (
@@ -54,6 +93,15 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onCancel 
                     <div className="form-group">
                         <label>Points:</label>
                         <input type="number" name="points" value={newProduct.points} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Product Type:</label>
+                        <select name="productTypeId" value={newProduct.productTypeId} onChange={handleChange} required>
+                            <option value="">Select a product type</option>
+                            {productTypes.map(productType => (
+                                <option key={productType.id} value={productType.id}>{productType.type}</option>
+                            ))}
+                        </select>
                     </div>
                     <div className="form-buttons">
                         <button type="submit" className="btn-green">Submit</button>

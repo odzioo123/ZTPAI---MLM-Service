@@ -7,7 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -186,168 +186,155 @@ public class DatabaseInitializer implements CommandLineRunner {
         ProductType productType10 = new ProductType();
         productType10.setType("Essential Oils");
 
-        productTypeRepository.saveAll(Set.of(productType1, productType2, productType3, productType4, productType5, productType6,
-                productType7, productType8, productType9, productType10));
-
-        Set<ProductType> productTypes1 = new HashSet<>();
-        productTypes1.add(productType1);
-
-        Set<ProductType> productTypes2 = new HashSet<>();
-        productTypes1.add(productType2);
-
-        Set<ProductType> productTypes3 = new HashSet<>();
-        productTypes1.add(productType3);
-
-        Set<ProductType> productTypes4 = new HashSet<>();
-        productTypes1.add(productType4);
+        productTypeRepository.saveAll(Set.of(productType1, productType2, productType3, productType4, productType5,
+                productType6, productType7, productType8, productType9, productType10));
 
         Product product1 = new Product();
         product1.setCode(715);
         product1.setName("Forever Aloe Vera Gel");
         product1.setPrice(160.45);
         product1.setPoints(0.101);
-        product1.setProductType(productTypes1);
+        product1.setProductType(List.of(productType1));
 
         Product product2 = new Product();
         product2.setCode(7153);
         product2.setName("Tripak Forever Aloe Vera Gel");
         product2.setPrice(481.32);
         product2.setPoints(0.303);
-        product2.setProductType(productTypes1);
+        product2.setProductType(List.of(productType1));
 
         Product product3 = new Product();
         product3.setCode(71612);
         product3.setName("Forever Aloe Vera Gel mini");
         product3.setPrice(641.91);
         product3.setPoints(0.449);
-        product3.setProductType(productTypes1);
+        product3.setProductType(List.of(productType1));
 
         Product product4 = new Product();
         product4.setCode(734);
         product4.setName("Forever Aloe Berry Nectar");
         product4.setPrice(160.45);
         product4.setPoints(0.101);
-        product4.setProductType(productTypes1);
+        product4.setProductType(List.of(productType1));
 
         Product product5 = new Product();
         product5.setCode(777);
         product5.setName("Forever Aloe Peaches");
         product5.setPrice(160.45);
         product5.setPoints(0.101);
-        product5.setProductType(productTypes1);
+        product5.setProductType(List.of(productType1));
 
         Product product6 = new Product();
         product6.setCode(7773);
         product6.setName("Tripak Forever Aloe Peaches");
         product6.setPrice(481.32);
         product6.setPoints(0.303);
-        product6.setProductType(productTypes1);
+        product6.setProductType(List.of(productType1));
 
         Product product7 = new Product();
         product7.setCode(736);
         product7.setName("Forever Aloe Mango");
         product7.setPrice(160.45);
         product7.setPoints(0.101);
-        product7.setProductType(productTypes1);
+        product7.setProductType(List.of(productType1));
 
         Product product8 = new Product();
         product8.setCode(37);
         product8.setName("Forever Nature-Min");
         product8.setPrice(98.86);
         product8.setPoints(0.073);
-        product8.setProductType(productTypes2);
+        product8.setProductType(List.of(productType2));
 
         Product product9 = new Product();
         product9.setCode(48);
         product9.setName("Forever Absorbent-C");
         product9.setPrice(94.80);
         product9.setPoints(0.070);
-        product9.setProductType(productTypes2);
+        product9.setProductType(List.of(productType2));
 
         Product product10 = new Product();
         product10.setCode(65);
         product10.setName("Forever Garlic-Thyme");
         product10.setPrice(98.86);
         product10.setPoints(0.073);
-        product10.setProductType(productTypes2);
+        product10.setProductType(List.of(productType2));
 
         Product product11 = new Product();
         product11.setCode(68);
         product11.setName("Forever Fields of Greens");
         product11.setPrice(65.01);
         product11.setPoints(0.048);
-        product11.setProductType(productTypes2);
-
-        //Start wpjfapfjpajgpojapgojwpokgjpwjapfokpowakfpokpwoakfpkwapf
+        product11.setProductType(List.of(productType2));
 
         Product product12 = new Product();
         product12.setCode(26);
         product12.setName("Forever Bee Pollen 100 tablets");
         product12.setPrice(82.61);
         product12.setPoints(0.061);
-        product12.setProductType(productTypes3);
+        product12.setProductType(List.of(productType3));
 
         Product product13 = new Product();
         product13.setCode(27);
         product13.setName("Forever Bee Propolis 60 tablets");
         product13.setPrice(172.0);
         product13.setPoints(0.127);
-        product13.setProductType(productTypes3);
+        product13.setProductType(List.of(productType3));
 
         Product product14 = new Product();
         product14.setCode(36);
         product14.setName("Forever Royal Jelly 60 tablets");
         product14.setPrice(178.77);
         product14.setPoints(0.132);
-        product14.setProductType(productTypes3);
+        product14.setProductType(List.of(productType3));
 
         Product product15 = new Product();
         product15.setCode(207);
         product15.setName("Forever Bee Honey 0,5kg");
         product15.setPrice(88.22);
         product15.setPoints(0.067);
-        product15.setProductType(productTypes3);
+        product15.setProductType(List.of(productType3));
 
         Product product16 = new Product();
         product16.setCode(71);
         product16.setName("Forever Garcinia Plus 70 capsules");
         product16.setPrice(178.77);
         product16.setPoints(0.132);
-        product16.setProductType(productTypes4);
+        product16.setProductType(List.of(productType4));
 
         Product product17 = new Product();
         product17.setCode(289);
         product17.setName("Forever Lean 120 capsules");
         product17.setPrice(185.54);
         product17.setPoints(0.137);
-        product17.setProductType(productTypes4);
+        product17.setProductType(List.of(productType4));
 
         Product product18 = new Product();
         product18.setCode(463);
         product18.setName("Forever Therm 60 tablets");
         product18.setPrice(188.25);
         product18.setPoints(0.139);
-        product18.setProductType(productTypes4);
+        product18.setProductType(List.of(productType4));
 
         Product product19 = new Product();
         product19.setCode(470);
         product19.setName("Forever Lite Ultra | vanilla 375g");
         product19.setPrice(135.43);
         product19.setPoints(0.100);
-        product19.setProductType(productTypes4);
+        product19.setProductType(List.of(productType4));
 
         Product product20 = new Product();
         product20.setCode(471);
         product20.setName("Forever Lite Ultra | chocolate 390g");
         product20.setPrice(154.24);
         product20.setPoints(0.100);
-        product20.setProductType(productTypes4);
+        product20.setProductType(List.of(productType4));
 
-        productRepository.saveAll(Set.of(product1, product2, product3, product4, product5, product6, product7, product8,
+        productRepository.saveAll(List.of(product1, product2, product3, product4, product5, product6, product7, product8,
                 product9, product10, product11, product12, product13, product14, product15, product16, product17, product18
                 , product19, product20));
 
-        // Sales for client1
+
+//         Sales for client1
         Sale sale1 = new Sale();
         sale1.setQuantity(2);
         sale1.setNote("First Sale for client1");

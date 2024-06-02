@@ -1,9 +1,10 @@
 package com.example.ztpai.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -14,5 +15,6 @@ public class ProductType {
     private Integer id;
     private String type;
     @ManyToMany(mappedBy = "productType", cascade = CascadeType.ALL)
-    private Set<Product> products;
+    @JsonIgnoreProperties("productType") // sus
+    private List<Product> products;
 }
