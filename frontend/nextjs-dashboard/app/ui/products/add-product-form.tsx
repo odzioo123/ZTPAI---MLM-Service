@@ -77,7 +77,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onCancel 
             <div className="modal-content">
                 <span className="close" onClick={onCancel}>&times;</span>
                 <h2>Add Product</h2>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} style={{ fontSize: "0.8rem" }}>
                     <div className="form-group">
                         <label>Name:</label>
                         <input type="text" name="name" value={newProduct.name} onChange={handleChange} required />

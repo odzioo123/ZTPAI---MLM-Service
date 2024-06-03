@@ -62,9 +62,9 @@ const AddClientForm: React.FC<AddClientFormProps> = ({ onAddClient, onCancel }) 
         <div className="modal">
             <div className="modal-content">
                 <span className="close" onClick={onCancel}>&times;</span>
-                <h2>Add Client</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                <h2 className="text-sm">Add Client</h2>
+                <form onSubmit={handleSubmit} style={{ fontSize: "0.8rem" }}>
+                    <div className="form-group" >
                         <label>Name:</label>
                         <input type="text" name="name" value={newClient.name} onChange={handleChange} required />
                         {errors.name && <span className="error">{errors.name}</span>}

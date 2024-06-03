@@ -33,16 +33,16 @@ const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border border-gray-300">
+            <table className="min-w-full border-collapse border border-gray-300 text-xs md:text-lg">
                 <thead>
-                <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">Client Name</th>
-                    <th className="border border-gray-300 px-4 py-2">Product</th>
-                    <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                    <th className="border border-gray-300 px-4 py-2">Date</th>
-                    <th className="border border-gray-300 px-4 py-2">Note</th>
-                    <th className="border border-gray-300 px-4 py-2">Price</th>
-                    <th className="border border-gray-300 px-4 py-2">Actions</th>
+                <tr className="bg-green-200 md:bg-gray-200">
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Client Name</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Product</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Quantity</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Date</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Note</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Price</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -51,13 +51,13 @@ const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
                     const totalPrice = (sale.quantity * sale.product.price * (1 - sale.client.discount / 100)).toFixed(2);
                     return (
                         <tr key={sale.id}>
-                            <td className="border border-gray-300 px-4 py-2">{sale.client.name} {sale.client.surname}</td>
-                            <td className="border border-gray-300 px-4 py-2">{sale.product.name}</td>
-                            <td className="border border-gray-300 px-4 py-2">{sale.quantity}</td>
-                            <td className="border border-gray-300 px-4 py-2">{sale.date}</td>
-                            <td className="border border-gray-300 px-4 py-2">{sale.note}</td>
-                            <td className="border border-gray-300 px-4 py-2">{totalPrice}</td>
-                            <td className="border border-gray-300 px-4 py-2">
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.client.name} {sale.client.surname}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.product.name}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.quantity}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.date}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.note}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{totalPrice}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
                                 <div className="flex justify-center">
                                     <button
                                         className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"

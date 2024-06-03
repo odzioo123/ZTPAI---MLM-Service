@@ -92,7 +92,7 @@ const SalesPage = () => {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-2 md: p-5">
             <TopBar title="Sales Management" />
             {errorMessage && (
                 <div className="alert alert-danger" role="alert">
@@ -102,8 +102,8 @@ const SalesPage = () => {
             <button className="btn-green mb-4" onClick={() => setShowAddSaleForm(true)}>Add Sale</button>
             <SalesTable sales={sales} onDelete={deleteSale} />
             {showAddSaleForm && <AddSaleForm onAddSale={addSale} onCancel={() => setShowAddSaleForm(false)} />}
-            <div className="flex justify-between items-center mt-4">
-                <div>
+            <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+                <div className="flex items-center mb-4 md:mb-0">
                     <label htmlFor="pageSize" className="mr-2">Page size:</label>
                     <select id="pageSize" value={size} onChange={e => handleSizeChange(Number(e.target.value))}>
                         <option value={2}>2</option>
@@ -111,7 +111,7 @@ const SalesPage = () => {
                         <option value={20}>20</option>
                     </select>
                 </div>
-                <div>
+                <div className="flex items-center">
                     <button
                         onClick={() => handlePageChange(page - 1)}
                         disabled={page <= 0}

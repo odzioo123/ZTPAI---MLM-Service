@@ -27,7 +27,7 @@ const StatisticsPage = () => {
     }, [selectedOption]);
 
     const handleOptionClick = (option: string) => {
-        setSelectedOption(option);
+        setSelectedOption(selectedOption === option ? null : option);
         setData(null);
     };
 
@@ -61,7 +61,7 @@ const StatisticsPage = () => {
                         <ul>
                             {data.map((clientData: any, index: number) => (
                                 <li key={index}>
-                                    {clientData.client.name} {clientData.client.surname} - Spent: ${clientData.totalSpent}
+                                    {clientData.name} {clientData.surname} - Spent: ${clientData.totalSpent}
                                 </li>
                             ))}
                         </ul>
@@ -70,18 +70,26 @@ const StatisticsPage = () => {
                 {selectedOption === 'clients-points' && data && (
                     <div>
                         <h2 className="text-xl font-bold mb-4">Clients Points</h2>
-                        <table className="min-w-full border-collapse border border-gray-300">
+                        <table className="min-w-full border-collapse border border-gray-300 text-xs md:text-lg">
                             <thead>
                             <tr className="bg-gray-200">
-                                <th className="border border-gray-300 px-4 py-2">Name</th>
-                                <th className="border border-gray-300 px-4 py-2">Points</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Name</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Surname</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Email</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Phone</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Note</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Points</th>
                             </tr>
                             </thead>
                             <tbody>
                             {data.map((clientData: any, index: number) => (
                                 <tr key={index}>
-                                    <td className="border border-gray-300 px-4 py-2">{clientData.client.name} {clientData.client.surname}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{clientData.totalPoints}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.name}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.surname}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.email}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.phone}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.note}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.totalPoints}</td>
                                 </tr>
                             ))}
                             </tbody>
