@@ -21,7 +21,7 @@ const RegisterPage = () => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem("token", data.token);
-                window.location.replace("/dashboard");
+                window.location.replace("/dashboard/products");
             } else {
                 const errorText = await response.text();
                 console.error("Error data:", errorText);

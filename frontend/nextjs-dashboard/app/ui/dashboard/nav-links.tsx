@@ -13,11 +13,11 @@ import clsx from 'clsx';
 
 
 const links = [
-  {
-    name: 'Home',
-    href: '/dashboard',
-    icon: HomeIcon
-  },
+  // {
+  //   name: 'Home',
+  //   href: '/dashboard',
+  //   icon: HomeIcon
+  // },
   {
     name: 'Sales',
     href: '/dashboard/sales',

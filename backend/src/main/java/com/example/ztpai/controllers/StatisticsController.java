@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/statistics")
@@ -38,17 +37,20 @@ public class StatisticsController {
 
             for (Client client : clients) {
                 double totalSpent = 0.0;
+                int numberOfSales = 0;
                 Set<Sale> sales = saleRepository.findByClient(client);
                 for (Sale sale : sales) {
                     double price = (sale.getProduct().getPrice() * ((100-client.getDiscount())/100));
                     price = Math.ceil(price * 100) / 100;
                     int quantity = sale.getQuantity();
                     totalSpent += price * quantity ;
+                    numberOfSales++;
                 }
                 Map<String, Object> clientInfo = new HashMap<>();
                 clientInfo.put("name", client.getName());
                 clientInfo.put("surname", client.getSurname());
-                clientInfo.put("totalSpent", totalSpent);
+                clientInfo.put("totalSpent", Math.ceil(totalSpent * 100) / 100);
+                clientInfo.put("numberOfSales", numberOfSales);
                 bestClients.add(clientInfo);
             }
             bestClients.sort((a, b) -> Double.compare((Double) b.get("totalSpent"), (Double) a.get("totalSpent")));

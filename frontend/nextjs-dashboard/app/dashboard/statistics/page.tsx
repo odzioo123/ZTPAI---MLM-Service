@@ -58,13 +58,26 @@ const StatisticsPage = () => {
                 {selectedOption === 'best-clients' && data && (
                     <div>
                         <h2 className="text-xl font-bold mb-4">Best Clients</h2>
-                        <ul>
+                        <table className="min-w-full border-collapse border border-gray-300 text-xs md:text-lg">
+                            <thead>
+                            <tr className="bg-gray-200">
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Name</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Surname</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Total Spent</th>
+                                <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Number of Sales</th> {/* Add this column header */}
+                            </tr>
+                            </thead>
+                            <tbody>
                             {data.map((clientData: any, index: number) => (
-                                <li key={index}>
-                                    {clientData.name} {clientData.surname} - Spent: ${clientData.totalSpent}
-                                </li>
+                                <tr key={index}>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.name}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.surname}</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.totalSpent} PLN</td>
+                                    <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{clientData.numberOfSales}</td> {/* Display the number of sales */}
+                                </tr>
                             ))}
-                        </ul>
+                            </tbody>
+                        </table>
                     </div>
                 )}
                 {selectedOption === 'clients-points' && data && (
@@ -99,7 +112,7 @@ const StatisticsPage = () => {
                 {selectedOption === 'monthly-profit' && data && (
                     <div>
                         <h2 className="text-xl font-bold mb-4">Monthly Profit</h2>
-                        <p>Total Profit: ${data.totalProfit}</p>
+                        <p>Total Profit: {data.totalProfit} PLN</p>
                     </div>
                 )}
             </div>
