@@ -47,14 +47,13 @@ const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
                 </thead>
                 <tbody>
                 {sales.map((sale) => {
-                    // Calculate price with discount
                     const totalPrice = (sale.quantity * sale.product.price * (1 - sale.client.discount / 100)).toFixed(2);
                     return (
                         <tr key={sale.id}>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.client.name} {sale.client.surname}</td>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.product.name}</td>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.quantity}</td>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.date}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{(new Date(sale.date)).toLocaleString()}</td>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.note}</td>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{totalPrice}</td>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">

@@ -47,7 +47,7 @@ const Table: React.FC<TableProps> = ({ clients, onDelete }) => {
                         <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.discount}</td>
                         <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.phone_number}</td>
                         <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.email}</td>
-                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.date}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{(new Date(client.date)).toLocaleString()}</td>
                         <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.note}</td>
                         <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 w-20 text-center">
                             <div className="flex justify-center">

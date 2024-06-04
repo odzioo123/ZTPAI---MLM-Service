@@ -36,23 +36,33 @@ public class SaleController {
     public ResponseEntity<Page<Sale>> getSales(
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) String clientName) {
         try {
             Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
             List<Integer> clientIds = clientRepository.findAllByUser_Id(userId).stream()
                     .map(Client::getId)
                     .collect(Collectors.toList());
             Pageable pageable = PageRequest.of(page, size);
-            Page<Sale> salesPage = saleRepository.findAllByClientIdIn(clientIds, pageable);
+
+            Page<Sale> salesPage;
+            if (productName != null && !productName.isEmpty()) {
+                salesPage = saleRepository.findAllByClientIdInAndProduct_NameContainingIgnoreCase(clientIds, productName, pageable);
+            } else if (clientName != null && !clientName.isEmpty()) {
+                salesPage = saleRepository.findSalesByClientNameOrSurnameContainingIgnoreCase(clientIds, clientName, pageable);
+            } else {
+                salesPage = saleRepository.findAllByClientIdIn(clientIds, pageable);
+            }
+
             return ResponseEntity.ok(salesPage);
-        }
-        catch (NoSuchElementException ex) {
+        } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @PostMapping("/sales-add")
     public ResponseEntity<?> addSale(@RequestBody Sale sale, @RequestHeader("Authorization") String token) {
