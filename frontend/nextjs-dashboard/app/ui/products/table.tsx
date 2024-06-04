@@ -37,25 +37,25 @@ const ProductsTable: React.FC<TableProps> = ({ products, onDelete, userRole }) =
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border border-gray-300">
+            <table className="min-w-full border-collapse border border-gray-300 text-xs md:text-lg">
                 <thead>
-                <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">Code</th>
-                    <th className="border border-gray-300 px-4 py-2">Name</th>
-                    <th className="border border-gray-300 px-4 py-2">Price</th>
-                    <th className="border border-gray-300 px-4 py-2">Points</th>
-                    <th className="border border-gray-300 px-4 py-2">Product Type</th>
-                    {isAdmin && <th className="border border-gray-300 px-4 py-2 w-24 text-center">Actions</th>}
+                <tr className="bg-green-200 md:bg-gray-200">
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Code</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Name</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Price</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Points</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Product Type</th>
+                    {isAdmin && <th className="border border-gray-300 px-2 py-1 text-center md:px-4 md:py-2">Actions</th>}
                 </tr>
                 </thead>
                 <tbody>
                 {products.map((product) => (
                     <tr key={product.id}>
-                        <td className="border border-gray-300 px-4 py-2">{product.code}</td>
-                        <td className="border border-gray-300 px-4 py-2">{product.name}</td>
-                        <td className="border border-gray-300 px-4 py-2">{product.price}</td>
-                        <td className="border border-gray-300 px-4 py-2">{product.points}</td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{product.code}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{product.name}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{product.price}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{product.points}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
                             {product.productType.map(pt => pt.type).join(', ')}
                         </td>
                         {isAdmin && (

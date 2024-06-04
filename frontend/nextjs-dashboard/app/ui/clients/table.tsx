@@ -26,33 +26,33 @@ const Table: React.FC<TableProps> = ({ clients, onDelete }) => {
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border border-gray-300">
+            <table className="min-w-full border-collapse border border-gray-300 text-xs md:text-lg">
                 <thead>
-                <tr className="bg-green-200">
-                    <th className="border border-gray-300 px-4 py-2">Name</th>
-                    <th className="border border-gray-300 px-4 py-2">Surname</th>
-                    <th className="border border-gray-300 px-4 py-2">Discount</th>
-                    <th className="border border-gray-300 px-4 py-2">Phone Number</th>
-                    <th className="border border-gray-300 px-4 py-2">Email</th>
-                    <th className="border border-gray-300 px-4 py-2">Date</th>
-                    <th className="border border-gray-300 px-4 py-2">Note</th>
-                    <th className="border border-gray-300 px-4 py-2 w-20 text-center">Actions</th>
+                <tr className="bg-green-200 md:bg-gray-200">
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Name</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Surname</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Discount</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Phone Number</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Email</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Date</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Note</th>
+                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 w-20 text-center">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {clients.map((client) => (
                     <tr key={client.id}>
-                        <td className="border border-gray-300 px-4 py-2">{client.name}</td>
-                        <td className="border border-gray-300 px-4 py-2">{client.surname}</td>
-                        <td className="border border-gray-300 px-4 py-2">{client.discount}</td>
-                        <td className="border border-gray-300 px-4 py-2">{client.phone_number}</td>
-                        <td className="border border-gray-300 px-4 py-2">{client.email}</td>
-                        <td className="border border-gray-300 px-4 py-2">{client.date}</td>
-                        <td className="border border-gray-300 px-4 py-2">{client.note}</td>
-                        <td className="border border-gray-300 px-2 py-2 w-20 text-center">
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.name}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.surname}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.discount}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.phone_number}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.email}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{(new Date(client.date)).toLocaleString()}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{client.note}</td>
+                        <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 w-20 text-center">
                             <div className="flex justify-center">
                                 <button
-                                    className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                    className="px-2 py-1 md:px-3 md:py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
                                     onClick={() => setConfirmDelete(client.id)}
                                 >
                                     Delete

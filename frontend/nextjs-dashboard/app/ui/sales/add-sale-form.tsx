@@ -86,7 +86,7 @@ const AddSaleForm: React.FC<AddSaleFormProps> = ({ onAddSale, onCancel }) => {
             <div className="modal-content">
                 <span className="close" onClick={onCancel}>&times;</span>
                 <h2>Add Sale</h2>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} style={{ fontSize: "0.8rem" }}>
                     <div className="form-group">
                         <label>Product:</label>
                         <select name="product" value={newSale.product.id} onChange={handleSelectChange} required>

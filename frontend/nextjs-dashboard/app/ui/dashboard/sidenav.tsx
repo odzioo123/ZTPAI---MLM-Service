@@ -15,12 +15,12 @@ export default function SideNav() {
     };
 
     return (
-        <div className="flex h-full flex-col px-3 py-4 md:px-2">
+        <div className="flex h-full flex-col px-3 py-4 md:px-2 bg-white md:bg-transparent">
             <Link
-                className="mb-2 flex h-20 items-center justify-start rounded-md bg-green-500 p-4 md:h-40"
+                className="mb-2 flex h-20 items-center justify-center rounded-md bg-green-500 p-4 md:h-40 md:justify-start"
                 href="/"
             >
-                <div className="w-32 text-white md:w-60">
+                <div className="w-32 text-white md:w-full ">
                     <MyLogo />
                 </div>
             </Link>
@@ -30,8 +30,8 @@ export default function SideNav() {
                 <form>
                     <button
                         onClick={handleLogout}
-                        className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-green-100 hover:text-green-600 md:flex-none md:justify-start md:p-2 md:px-3"
-                    >
+                        className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-green-50 p-3 text-sm font-medium hover:bg-green-100 hover:text-green-600 md: md:flex-none md:justify-start md:p-2 md:px-3 md:bg-gray-50">
+
                         <PowerIcon className="w-6" />
                         <div className="hidden md:block">Sign Out</div>
                     </button>
