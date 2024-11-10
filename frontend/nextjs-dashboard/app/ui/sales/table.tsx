@@ -23,12 +23,63 @@ interface TableProps {
     onDelete: (saleId: number) => void;
 }
 
+type SortConfig = {
+    key: keyof Sale | 'product.name' | 'client.name' | 'price';
+    direction: 'asc' | 'desc';
+};
+
 const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
     const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+
+    const sortedSales = React.useMemo(() => {
+        if (!sortConfig) return sales;
+
+        const sorted = [...sales];
+        sorted.sort((a, b) => {
+            let aValue: any = a;
+            let bValue: any = b;
+
+            if (sortConfig.key.includes('.')) {
+                const keys = sortConfig.key.split('.');
+                keys.forEach(key => {
+                    aValue = aValue[key];
+                    bValue = bValue[key];
+                });
+            } else if (sortConfig.key === 'price') {
+                aValue = a.quantity * a.product.price * (1 - a.client.discount / 100);
+                bValue = b.quantity * b.product.price * (1 - b.client.discount / 100);
+            } else {
+                aValue = a[sortConfig.key as keyof Sale];
+                bValue = b[sortConfig.key as keyof Sale];
+            }
+
+            if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        return sorted;
+    }, [sales, sortConfig]);
+
+    const handleSort = (key: SortConfig['key']) => {
+        setSortConfig((prev) => {
+            if (prev && prev.key === key) {
+                return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+            }
+            return { key, direction: 'asc' };
+        });
+    };
 
     const handleDeleteConfirm = (saleId: number) => {
         onDelete(saleId);
         setConfirmDelete(null);
+    };
+
+    // Sort direction indicators
+    const getSortIndicator = (key: string) => {
+        if (!sortConfig || sortConfig.key !== key) return null;
+        return sortConfig.direction === 'asc' ? '↑' : '↓';
     };
 
     return (
@@ -36,26 +87,65 @@ const SalesTable: React.FC<TableProps> = ({ sales, onDelete }) => {
             <table className="min-w-full border-collapse border border-gray-300 text-xs md:text-lg">
                 <thead>
                 <tr className="bg-green-200 md:bg-gray-200">
-                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Client Name</th>
-                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Product</th>
-                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Quantity</th>
-                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Date</th>
+                    <th
+                        className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 cursor-pointer"
+                        onClick={() => handleSort('client.name')}
+                    >
+                        Client Name {getSortIndicator('client.name')}
+                    </th>
+                    <th
+                        className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 cursor-pointer"
+                        onClick={() => handleSort('product.name')}
+                    >
+                        Product {getSortIndicator('product.name')}
+                    </th>
+                    <th
+                        className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 cursor-pointer"
+                        onClick={() => handleSort('quantity')}
+                    >
+                        Quantity {getSortIndicator('quantity')}
+                    </th>
+                    <th
+                        className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 cursor-pointer"
+                        onClick={() => handleSort('date')}
+                    >
+                        Date {getSortIndicator('date')}
+                    </th>
                     <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Note</th>
-                    <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Price</th>
+                    <th
+                        className="border border-gray-300 px-2 py-1 md:px-4 md:py-2 cursor-pointer"
+                        onClick={() => handleSort('price')}
+                    >
+                        Price {getSortIndicator('price')}
+                    </th>
                     <th className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                {sales.map((sale) => {
-                    const totalPrice = (sale.quantity * sale.product.price * (1 - sale.client.discount / 100)).toFixed(2);
+                {sortedSales.map((sale) => {
+                    const totalPrice = (
+                        sale.quantity * sale.product.price * (1 - sale.client.discount / 100)
+                    ).toFixed(2);
                     return (
                         <tr key={sale.id}>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.client.name} {sale.client.surname}</td>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.product.name}</td>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.quantity}</td>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{(new Date(sale.date)).toLocaleString()}</td>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{sale.note}</td>
-                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">{totalPrice}</td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
+                                {sale.client.name} {sale.client.surname}
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
+                                {sale.product.name}
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
+                                {sale.quantity}
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
+                                {new Date(sale.date).toLocaleString()}
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
+                                {sale.note}
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
+                                {totalPrice}
+                            </td>
                             <td className="border border-gray-300 px-2 py-1 md:px-4 md:py-2">
                                 <div className="flex justify-center">
                                     <button

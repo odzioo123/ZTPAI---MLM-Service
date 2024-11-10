@@ -8,5 +8,4 @@ public class ZtpaiApplication {
     public static void main(String[] args) {
         SpringApplication.run(ZtpaiApplication.class, args);
     }
-
 }

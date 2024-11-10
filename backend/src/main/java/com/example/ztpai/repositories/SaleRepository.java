@@ -13,10 +13,37 @@ import java.util.List;
 import java.util.Set;
 
 public interface SaleRepository extends JpaRepository<Sale, Integer> {
-    List<Sale> findAllByClientIdIn(List<Integer> clientIds);
-    Page<Sale> findAllByClientIdIn(List<Integer> clientIds, Pageable pageable);
     Set<Sale> findByClient(Client client);
-    Page<Sale> findAllByClientIdInAndProduct_NameContainingIgnoreCase(List<Integer> clientIds, String productName, Pageable pageable);
-    @Query("SELECT s FROM Sale s WHERE s.client.id IN :clientIds AND (LOWER(s.client.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.client.surname) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    Page<Sale> findSalesByClientNameOrSurnameContainingIgnoreCase(@Param("clientIds") List<Integer> clientIds, @Param("searchTerm") String searchTerm, Pageable pageable);
+    @Query("SELECT s FROM Sale s WHERE s.client.id IN :clientIds AND " +
+            "(:searchTerm IS NULL OR " +
+            "LOWER(CONCAT(s.client.name, ' ', s.client.surname)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(s.product.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(s.note) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "CAST(s.product.price AS string) LIKE CONCAT('%', :searchTerm, '%') OR " +
+            "CAST(s.date AS string) LIKE CONCAT('%', :searchTerm, '%'))")
+    Page<Sale> findAllByClientIdInAndSearchTerm(
+            @Param("clientIds") List<Integer> clientIds,
+            @Param("searchTerm") String searchTerm,
+            Pageable pageable);
+    Page<Sale> findAllByClientIdIn(List<Integer> clientIds, Pageable pageable);
+    @Query("SELECT s FROM Sale s WHERE s.client.id IN :clientIds AND " +
+            "(CAST(s.date AS date) BETWEEN :startDate AND :endDate) AND " +
+            "(:searchTerm IS NULL OR " +
+            "LOWER(CONCAT(s.client.name, ' ', s.client.surname)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(s.product.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(s.note) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "CAST(s.product.price AS string) LIKE CONCAT('%', :searchTerm, '%'))")
+    Page<Sale> findAllByClientIdInAndSearchTermWithDateRange(
+            @Param("clientIds") List<Integer> clientIds,
+            @Param("searchTerm") String searchTerm,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable);
+    @Query("SELECT s FROM Sale s WHERE s.client.id IN :clientIds AND " +
+            "(CAST(s.date AS date) BETWEEN :startDate AND :endDate) ")
+    Page<Sale> findAllByClientIdInAndDateRange(
+            List<Integer> clientIds,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable);
 }

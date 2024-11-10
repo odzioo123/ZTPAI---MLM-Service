@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,8 +18,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.NoSuchElementException;
-import java.util.List;
 import java.util.HashMap;
 
 @CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
@@ -38,27 +39,36 @@ public class ClientController {
     public ResponseEntity<Page<Client>> getClients(
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
         try {
             Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
             Pageable pageable = PageRequest.of(page, size);
-            Page<Client> clientsPage = clientRepository.findAllByUser_Id(userId, pageable);
+            Page<Client> clientsPage;
+
+            if (searchTerm != null && searchTerm.isBlank()) {
+                searchTerm = null;
+            }
+
+            if (startDate != null && endDate != null && searchTerm != null && !searchTerm.isBlank()) {
+                clientsPage = clientRepository.searchClients(userId, searchTerm, startDate, endDate, pageable);
+            }
+            else if (startDate != null && endDate != null) {
+                clientsPage = clientRepository.findAllByUser_IdAndDateBetween(userId, startDate, endDate, pageable);
+            }
+            else if (searchTerm != null) {
+                clientsPage = clientRepository.searchClients(userId, searchTerm, pageable);
+            }
+            else {
+                clientsPage = clientRepository.findAllByUser_Id(userId, pageable);
+            }
             return ResponseEntity.ok(clientsPage);
+
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    @GetMapping("/clients-all")
-    public ResponseEntity<List<Client>> getAllClients(@RequestHeader("Authorization") String token) {
-        try {
-            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
-            List<Client> clients = clientRepository.findAllByUser_Id(userId);
-            return ResponseEntity.ok(clients);
-        } catch (Exception ex) {
-            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

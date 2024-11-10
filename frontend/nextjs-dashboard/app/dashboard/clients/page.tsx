@@ -12,22 +12,45 @@ const ClientsPage = () => {
     const [page, setPage] = useState<number>(0);
     const [size, setSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [startDate, setStartDate] = useState<string | null>(null);
+    const [endDate, setEndDate] = useState<string | null>(null);
+
 
     useEffect(() => {
         const fetchClients = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await fetch(`http://localhost:8080/clients?page=${page}&size=${size}`, {
+
+                const url = new URL(`http://localhost:8080/clients`);
+                url.searchParams.append('page', String(page));
+                url.searchParams.append('size', String(size));
+
+                if (searchTerm) {
+                    url.searchParams.append('searchTerm', searchTerm);
+                }
+
+                if (startDate) {
+                    const fromDateObj = new Date(startDate);
+                    url.searchParams.append('startDate', fromDateObj.toISOString().split('T')[0]);
+                }
+                if (endDate) {
+                    const toDateObj = new Date(endDate);
+                    url.searchParams.append('endDate', toDateObj.toISOString().split('T')[0]);
+                }
+
+                const response = await fetch(url.toString(), {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
+
                 if (response.ok) {
                     const data = await response.json();
                     setClients(data.content);
                     setTotalPages(data.totalPages);
                 } else {
-                    console.error('Failed to fetch clients data');
+                    console.error('Failed to fetch clients data', response.status);
                 }
             } catch (error) {
                 console.error('Error fetching clients data:', error);
@@ -35,7 +58,7 @@ const ClientsPage = () => {
         };
 
         fetchClients();
-    }, [page, size]);
+    }, [page, size, searchTerm, startDate, endDate]);
 
     const deleteClient = async (clientId: number) => {
         try {
@@ -103,6 +126,34 @@ const ClientsPage = () => {
                 </div>
             )}
             <button className="btn-green mb-4" onClick={() => setShowAddClientForm(true)}>Add Client</button>
+
+            {/* Search Input */}
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search by name, surname, phone, email, or note"
+                    className="input"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <label htmlFor="startDate" className="ml-4 mr-2">From:</label>
+                <input
+                    type="date"
+                    id="startDate"
+                    value={startDate || ""}
+                    onChange={e => setStartDate(e.target.value || null)}
+                    className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
+                />
+                <label htmlFor="endDate" className="ml-4 mr-2">To:</label>
+                <input
+                    type="date"
+                    id="endDate"
+                    value={endDate || ""}
+                    onChange={e => setEndDate(e.target.value || null)}
+                    className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
+                />
+            </div>
+
             <Table clients={clients} onDelete={deleteClient} />
             {showAddClientForm && <AddClientForm onAddClient={addClient} onCancel={() => setShowAddClientForm(false)} />}
             <div className="flex flex-col md:flex-row justify-between items-center mt-4">

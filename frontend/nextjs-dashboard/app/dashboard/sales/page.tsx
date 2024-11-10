@@ -12,39 +12,63 @@ const SalesPage = () => {
     const [page, setPage] = useState<number>(0);
     const [size, setSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(0);
-    const [productName, setProductName] = useState("");
-    const [clientName, setClientName] = useState("");
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [fromDate, setFromDate] = useState<string | null>(null);
+    const [toDate, setToDate] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<string>('date');
+    const [sortDirection, setSortDirection] = useState<string>('asc');
 
     const fetchSales = async () => {
         try {
             const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found. Redirect to login.");
+                return;
+            }
+
             const url = new URL(`http://localhost:8080/sales`);
             url.searchParams.append('page', String(page));
             url.searchParams.append('size', String(size));
-            if (productName) url.searchParams.append('productName', productName);
-            if (clientName) url.searchParams.append('clientName', clientName);
+            url.searchParams.append('sortBy', sortBy);
+            url.searchParams.append('sortDirection', sortDirection);
+
+            if (searchTerm) {
+                url.searchParams.append('searchTerm', searchTerm);
+            }
+
+            if (fromDate) {
+                const fromDateObj = new Date(fromDate);
+                url.searchParams.append('startDate', fromDateObj.toISOString().split('T')[0]);
+            }
+            if (toDate) {
+                const toDateObj = new Date(toDate);
+                url.searchParams.append('endDate', toDateObj.toISOString().split('T')[0]);
+            }
+
             const response = await fetch(url.toString(), {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+
             if (response.ok) {
                 const data = await response.json();
                 setSales(data.content);
                 setTotalPages(data.totalPages);
             } else {
-                console.error('Failed to fetch sales data');
+                console.error("Failed to fetch sales data:", response.status);
             }
         } catch (error) {
-            console.error('Error fetching sales data:', error);
+            console.error("Error fetching sales data:", error);
         }
     };
 
-
+    // Fetch sales on initial load and whenever dependencies change
     useEffect(() => {
         fetchSales();
-    }, [page, size, productName, clientName]);
+    }, [page, size, searchTerm, fromDate, toDate]);
 
+    // Handle sale deletion
     const deleteSale = async (saleId: number) => {
         try {
             const token = localStorage.getItem("token");
@@ -54,16 +78,18 @@ const SalesPage = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+
             if (response.ok) {
                 setSales(sales.filter(sale => sale.id !== saleId));
             } else {
-                console.error('Failed to delete sale');
+                console.error("Failed to delete sale");
             }
         } catch (error) {
-            console.error('Error deleting sale:', error);
+            console.error("Error deleting sale:", error);
         }
     };
 
+    // Handle sale addition
     const addSale = async (newSale: SaleInput): Promise<void> => {
         try {
             const token = localStorage.getItem("token");
@@ -75,6 +101,7 @@ const SalesPage = () => {
                 },
                 body: JSON.stringify(newSale),
             });
+
             if (response.ok) {
                 const createdSale = await response.json();
                 setSales([...sales, createdSale]);
@@ -85,10 +112,11 @@ const SalesPage = () => {
                 setErrorMessage(errorData);
             }
         } catch (error) {
-            console.error('Error adding sale:', error);
+            console.error("Error adding sale:", error);
         }
     };
 
+    // Handle pagination and size changes
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
     };
@@ -101,39 +129,58 @@ const SalesPage = () => {
     return (
         <div className="p-2 md:p-5">
             <TopBar title="Sales Management" />
+
             {errorMessage && (
                 <div className="alert alert-danger" role="alert">
                     {errorMessage}
                 </div>
             )}
-            <button className="btn-green mb-4" onClick={() => setShowAddSaleForm(true)}>Add Sale</button>
-            <div className="flex flex-wrap items-center mb-4">
-                <div className="flex items-center mr-4">
-                    <label htmlFor="clientName" className="mr-2">Client:</label>
-                    <input
-                        type="text"
-                        id="clientName"
-                        value={clientName}
-                        onChange={e => setClientName(e.target.value)}
-                        className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
-                        placeholder="Search by client name"
-                    />
-                </div>
-                <div className="flex items-center mr-4">
-                    <label htmlFor="productName" className="mr-2">Product:</label>
-                    <input
-                        type="text"
-                        id="productName"
-                        value={productName}
-                        onChange={e => setProductName(e.target.value)}
-                        className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
-                        placeholder="Search by product name"
-                    />
-                </div>
+
+            {/* Add Sale Button */}
+            <button className="btn-green mb-4" onClick={() => setShowAddSaleForm(true)}>
+                Add Sale
+            </button>
+
+            {/* Search Bar */}
+            <div className="flex items-center mb-4">
+                <label htmlFor="searchTerm" className="ml-4mr-2">Search:</label>
+                <input
+                    type="text"
+                    id="searchTerm"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
+                    placeholder="Search by client, product, date, price, or note"
+                />
+                <label htmlFor="startDate" className="ml-4 mr-2">From:</label>
+                <input
+                    type="date"
+                    id="startDate"
+                    value={fromDate || ""}
+                    onChange={e => setFromDate(e.target.value || null)}
+                    className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
+                />
+                <label htmlFor="endDate" className="ml-4 mr-2">To:</label>
+                <input
+                    type="date"
+                    id="endDate"
+                    value={toDate || ""}
+                    onChange={e => setToDate(e.target.value || null)}
+                    className="rounded-md px-2 py-1 border border-gray-300 focus:outline-none focus:border-blue-500"
+                />
             </div>
 
+
+
+             {/*Sales Table */}
             <SalesTable sales={sales} onDelete={deleteSale} />
-            {showAddSaleForm && <AddSaleForm onAddSale={addSale} onCancel={() => setShowAddSaleForm(false)} />}
+
+            {/* Add Sale Form */}
+            {showAddSaleForm && (
+                <AddSaleForm onAddSale={addSale} onCancel={() => setShowAddSaleForm(false)} />
+            )}
+
+            {/* Pagination Controls */}
             <div className="flex flex-col md:flex-row justify-between items-center mt-4">
                 <div className="flex items-center">
                     <label htmlFor="pageSize" className="mr-2">Page size:</label>

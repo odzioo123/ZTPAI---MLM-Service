@@ -10,10 +10,12 @@ import com.example.ztpai.repositories.ClientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -37,32 +39,40 @@ public class SaleController {
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String clientName) {
-        try {
-            Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
-            List<Integer> clientIds = clientRepository.findAllByUser_Id(userId).stream()
-                    .map(Client::getId)
-                    .collect(Collectors.toList());
-            Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate)
+    {
+            try {
+                Integer userId = jwtService.extractClaim(token.substring(7), claims -> claims.get("id", Integer.class));
+                List<Integer> clientIds = clientRepository.findAllByUser_Id(userId).stream()
+                        .map(Client::getId)
+                        .collect(Collectors.toList());
+                Pageable pageable = PageRequest.of(page, size);
+                Page<Sale> salesPage;
 
-            Page<Sale> salesPage;
-            if (productName != null && !productName.isEmpty()) {
-                salesPage = saleRepository.findAllByClientIdInAndProduct_NameContainingIgnoreCase(clientIds, productName, pageable);
-            } else if (clientName != null && !clientName.isEmpty()) {
-                salesPage = saleRepository.findSalesByClientNameOrSurnameContainingIgnoreCase(clientIds, clientName, pageable);
-            } else {
-                salesPage = saleRepository.findAllByClientIdIn(clientIds, pageable);
+                if (searchTerm != null && searchTerm.isBlank()) {
+                    searchTerm = null;
+                }
+
+                if (startDate != null && endDate != null && searchTerm != null) {
+                    salesPage = saleRepository.findAllByClientIdInAndSearchTermWithDateRange(
+                            clientIds, searchTerm, startDate, endDate, pageable);
+                } else if (startDate != null && endDate != null) {
+                    salesPage = saleRepository.findAllByClientIdInAndDateRange(
+                            clientIds, startDate, endDate, pageable);
+                } else if (searchTerm != null) {
+                    salesPage = saleRepository.findAllByClientIdInAndSearchTerm(clientIds, searchTerm, pageable);
+                } else {
+                    salesPage = saleRepository.findAllByClientIdIn(clientIds, pageable);
+                }
+                return ResponseEntity.ok(salesPage);
+            } catch (NoSuchElementException ex) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            } catch (Exception ex) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
-
-            return ResponseEntity.ok(salesPage);
-        } catch (NoSuchElementException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-    }
-
 
     @PostMapping("/sales-add")
     public ResponseEntity<?> addSale(@RequestBody Sale sale, @RequestHeader("Authorization") String token) {
