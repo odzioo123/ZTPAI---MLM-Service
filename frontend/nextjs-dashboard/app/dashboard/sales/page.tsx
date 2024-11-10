@@ -15,8 +15,6 @@ const SalesPage = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [fromDate, setFromDate] = useState<string | null>(null);
     const [toDate, setToDate] = useState<string | null>(null);
-    const [sortBy, setSortBy] = useState<string>('date');
-    const [sortDirection, setSortDirection] = useState<string>('asc');
 
     const fetchSales = async () => {
         try {
@@ -29,8 +27,6 @@ const SalesPage = () => {
             const url = new URL(`http://localhost:8080/sales`);
             url.searchParams.append('page', String(page));
             url.searchParams.append('size', String(size));
-            url.searchParams.append('sortBy', sortBy);
-            url.searchParams.append('sortDirection', sortDirection);
 
             if (searchTerm) {
                 url.searchParams.append('searchTerm', searchTerm);
@@ -63,12 +59,10 @@ const SalesPage = () => {
         }
     };
 
-    // Fetch sales on initial load and whenever dependencies change
     useEffect(() => {
         fetchSales();
     }, [page, size, searchTerm, fromDate, toDate]);
 
-    // Handle sale deletion
     const deleteSale = async (saleId: number) => {
         try {
             const token = localStorage.getItem("token");
@@ -89,7 +83,6 @@ const SalesPage = () => {
         }
     };
 
-    // Handle sale addition
     const addSale = async (newSale: SaleInput): Promise<void> => {
         try {
             const token = localStorage.getItem("token");
@@ -116,7 +109,6 @@ const SalesPage = () => {
         }
     };
 
-    // Handle pagination and size changes
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
     };
